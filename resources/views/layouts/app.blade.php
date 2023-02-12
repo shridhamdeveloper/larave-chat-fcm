@@ -13,8 +13,8 @@
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.17.1/firebase-messaging.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/8.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/8.0/firebase-messaging.js"></script>
 
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>

@@ -78,9 +78,6 @@
 @endsection
 @section('scripts')
 <script type="module">
-    // Import the functions you need from the SDKs you need
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
-      import { getMessaging, getToken, onMessage} from "https://www.gstatic.com/firebasejs/9.17.1/firebase-messaging.js";
       // TODO: Add SDKs for Firebase products that you want to use
       // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -95,51 +92,57 @@
       };
 
       // Initialize Firebase
-      const firebase = initializeApp(firebaseConfig);
+      firebase.initializeApp(firebaseConfig);
 
-    const messaging = getMessaging(firebase);
-    // getToken({vapidKey: "BDgYewWdsGICqMGBsC_HpJkqRw1yVD7w8rVw2BV4gOhYElJLBQ5pj0aEclrd1DpcV0JcksboSGuYmM6Oza8czFE"});
-    // messaging.usePublicVapidKey("BDgYewWdsGICqMGBsC_HpJkqRw1yVD7w8rVw2BV4gOhYElJLBQ5pj0aEclrd1DpcV0JcksboSGuYmM6Oza8czFE");
 
-    function sendTokenToServer(fcm_token){
-        const user_id = '{{Auth::user()->id}}';
-        axios.post('/api/save-token',{
-            fcm_token, user_id
-        }).then(res => {
-            console.log(res);
-        })
-    }
 
-    function retrieveToken(){
-        getToken(messaging, { vapidKey: "BDgYewWdsGICqMGBsC_HpJkqRw1yVD7w8rVw2BV4gOhYElJLBQ5pj0aEclrd1DpcV0JcksboSGuYmM6Oza8czFE" })
-                    .then((currentToken) => {
-            if (currentToken) {
-                sendTokenToServer(currentToken);
-                // updateUIForPushEnabled(currentToken);
-            } else {
-                // Show permission request.
-                // console.log('No Instance ID token available. Request permission to generate one.');
-                // Show permission UI.
-                // updateUIForPushPermissionRequired();
+      const messaging = firebase.messaging();
+        // Add the public key generated from the console here.
+        messaging.usePublicVapidKey("BDgYewWdsGICqMGBsC_HpJkqRw1yVD7w8rVw2BV4gOhYElJLBQ5pj0aEclrd1DpcV0JcksboSGuYmM6Oza8czFE");
+
+
+        function sendTokenToServer(fcm_token) {
+            const user_id = '{{auth()->user()->id}}';
+            //console.log($user_id);
+            axios.post('/api/save-token', {
+                fcm_token, user_id
+            })
+                .then(res => {
+                    console.log(res);
+                })
+
+        }
+
+        function retreiveToken(){
+            messaging.getToken().then((currentToken) => {
+                if (currentToken) {
+                    sendTokenToServer(currentToken);
+                    // updateUIForPushEnabled(currentToken);
+                } else {
+                    // Show permission request.
+                    //console.log('No Instance ID token available. Request permission to generate one.');
+                    // Show permission UI.
+                    //updateUIForPushPermissionRequired();
+                    //etTokenSentToServer(false);
+                    alert('You should allow notification!');
+                }
+            }).catch((err) => {
+                console.log(err.message);
+                // showToken('Error retrieving Instance ID token. ', err);
                 // setTokenSentToServer(false);
-                alert('You should allow notification!');
-            }
-        }).catch((err) => {
-            console.log(err.message);
-            // showToken('Error retrieving Instance ID token. ', err);
-            // setTokenSentToServer(false);
+            });
+        }
+        retreiveToken();
+        messaging.onTokenRefresh(()=>{
+            retreiveToken();
+
         });
-    }
 
-    retrieveToken();
+        messaging.onMessage((payload)=>{
+            console.log('Message received');
+            console.log(payload);
 
-    // onNewToken(() => {
-    //     retrieveToken();
-    // });
-
-    onMessage(messaging, (payload) => {
-      console.log('Message received. ', payload);
-      // ...
-    });
+            location.reload();
+        });
 </script>
 @endsection

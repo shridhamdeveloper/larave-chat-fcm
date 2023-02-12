@@ -1,9 +1,6 @@
-import { initializeApp } from "firebase/app";
-import { getMessaging, onBackgroundMessage } from "firebase/messaging/sw";
-
-// Initialize the Firebase app in the service worker by passing in
-// your app's Firebase config object.
-// https://firebase.google.com/docs/web/setup#config-object
+importScripts('https://www.gstatic.com/firebasejs/8.0/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/8.0/firebase-messaging.js');
+// // https://firebase.google.com/docs/web/setup#config-object
 const firebaseConfig = {
   apiKey: "AIzaSyA8a-DXtzqupLMU5UJuTuQ2N1PAy7PLGwA",
   authDomain: "chatsi-realtime-laravel-3ee6e.firebaseapp.com",
@@ -12,20 +9,21 @@ const firebaseConfig = {
   messagingSenderId: "755761302018",
   appId: "1:755761302018:web:fd11c184a8a7819700751b"
 };
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 
 // Retrieve an instance of Firebase Messaging so that it can handle background
 // messages.
-const firebase = initializeApp(firebaseConfig);
-const messaging = getMessaging(firebase);
+const messaging = firebase.messaging();
 
-onBackgroundMessage(messaging, (payload) => {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload);
-  // Customize notification here
-  const {title, body} = paylod.notification;
-  const notificationOptions = {
-    body,
-  };
+messaging.setBackgroundMessageHandler(function(payload) {
+    console.log('[firebase-messaging-sw.js] Received background message ', payload);
+    // Customize notification here
+    const {title, body} = payload.notification;
+    const notificationOptions = {
+        body,
+    };
 
-  self.registration.showNotification(title,
-    notificationOptions);
+    return self.registration.showNotification(title,
+        notificationOptions);
 });
